@@ -66,11 +66,11 @@ npm run preview
 
 ### Homepage
 
-<img width="1878" height="858" alt="image" src="https://github.com/user-attachments/assets/372e6992-9467-4d26-98cf-20a6f2fbf9e4" />
+<img width="1888" height="865" alt="image" src="https://github.com/user-attachments/assets/7d512de8-ae7b-41ed-9118-79d68b70b976" />
 
 ### Editing Tools
 
-<img width="1878" height="858" alt="image" src="https://github.com/user-attachments/assets/81201304-ed2f-4412-bb6b-5261fdf3380b" />
+<img width="1901" height="862" alt="image" src="https://github.com/user-attachments/assets/da8a6e10-9e04-4429-afee-7452eb5f647f" />
 
 ---
 
