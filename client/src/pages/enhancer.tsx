@@ -24,6 +24,7 @@ export default function Enhancer() {
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
+    document.title = "PhotoPro — Photo Enhancer";
   }, []);
 
   const handleFileSelect = (file: File) => {

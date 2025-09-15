@@ -9,6 +9,7 @@ import Home from "@/pages/home";
 import Compressor from "@/pages/compressor";
 import Enhancer from "@/pages/enhancer";
 import Converter from "@/pages/converter";
+import PDFConverter from "@/pages/pdf";
 import HelpCenter from "@/pages/help-center";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import TermsOfService from "@/pages/TermsOfService";
@@ -25,6 +26,7 @@ function Router() {
           <Route path="/compressor" component={Compressor} />
           <Route path="/enhancer" component={Enhancer} />
           <Route path="/converter" component={Converter} />
+          <Route path="/pdf" component={PDFConverter} />
           <Route path="/help-center" component={HelpCenter} />
           <Route path="/privacy-policy" component={PrivacyPolicy} />
           <Route path="/contact-us" component={ContactUs} />

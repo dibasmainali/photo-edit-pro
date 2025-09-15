@@ -24,6 +24,7 @@ export default function Compressor() {
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
+    document.title = "PhotoPro — Photo Compressor";
   }, []);
 
   const handleFileSelect = (file: File) => {

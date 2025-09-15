@@ -22,6 +22,7 @@ export default function Converter() {
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
+    document.title = "PhotoPro — Photo Converter";
   }, []);
 
   const handleFileSelect = (file: File) => {

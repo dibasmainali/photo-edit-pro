@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Link } from "wouter";
+import { Separator } from "@/components/ui/separator";
 
 export default function HelpCenter() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -12,6 +13,7 @@ export default function HelpCenter() {
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
+    document.title = "PhotoPro — Help Center";
   }, []);
 
   const faqData = [
@@ -195,6 +197,38 @@ export default function HelpCenter() {
           </Card>
         </div>
 
+        {/* Resource Links */}
+        <Card className="feature-card card-glow border-0 mb-12">
+          <CardContent className="p-6">
+            <div className="grid md:grid-cols-3 gap-6">
+              <div>
+                <h4 className="text-sm uppercase tracking-wide text-purple-300 mb-3">Popular Topics</h4>
+                <ul className="text-sm text-purple-100/90 space-y-2 list-disc list-inside">
+                  <li>Best settings for web images</li>
+                  <li>When to use PNG vs JPEG vs WebP</li>
+                  <li>Improving contrast without noise</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-sm uppercase tracking-wide text-purple-300 mb-3">Troubleshooting</h4>
+                <ul className="text-sm text-purple-100/90 space-y-2 list-disc list-inside">
+                  <li>Upload stuck at 0%: what to check</li>
+                  <li>Unsupported format? Quick fixes</li>
+                  <li>Why is my download blank?</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-sm uppercase tracking-wide text-purple-300 mb-3">Guides</h4>
+                <ul className="text-sm text-purple-100/90 space-y-2 list-disc list-inside">
+                  <li>Compressing images for email</li>
+                  <li>Enhance portraits tastefully</li>
+                  <li>Convert transparent images</li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* FAQ Section */}
         <div className="space-y-8">
           <h2 className="text-3xl font-heading font-bold text-card text-center mb-8">
@@ -264,6 +298,8 @@ export default function HelpCenter() {
                 <Button variant="outline">Submit Feedback</Button>
               </Link>
             </div>
+            <Separator className="my-6 bg-purple-600/40" />
+            <p className="text-xs text-purple-300">Response time: within 24 hours on business days</p>
           </CardContent>
         </Card>
       </div>

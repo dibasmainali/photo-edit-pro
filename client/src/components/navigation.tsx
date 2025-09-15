@@ -13,6 +13,7 @@ export default function Navigation() {
     { path: "/compressor", label: "Compressor" },
     { path: "/enhancer", label: "Enhancer" },
     { path: "/converter", label: "Converter" },
+    { path: "/pdf", label: "PDF" },
   ];
 
   useEffect(() => {

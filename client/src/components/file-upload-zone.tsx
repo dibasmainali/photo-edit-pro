@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 
 interface FileUploadZoneProps {
   onFileSelect: (file: File) => void;
+  onFilesSelect?: (files: File[]) => void;
   accept?: string;
   maxSize?: number;
   icon?: React.ReactNode;
@@ -13,10 +14,12 @@ interface FileUploadZoneProps {
   supportedFormats?: string;
   testId?: string;
   isLoading?: boolean;
+  multiple?: boolean;
 }
 
 export default function FileUploadZone({
   onFileSelect,
+  onFilesSelect,
   accept = "image/*",
   maxSize = 10 * 1024 * 1024, // 10MB default
   icon,
@@ -25,6 +28,7 @@ export default function FileUploadZone({
   supportedFormats = "Supports: JPEG, PNG, WebP • Max size: 10MB",
   testId = "upload-zone",
   isLoading = false,
+  multiple = false,
 }: FileUploadZoneProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,16 +72,30 @@ export default function FileUploadZone({
 
     const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
-      handleFileSelect(files[0]);
+      if (multiple && onFilesSelect) {
+        const validFiles = files.filter((f) => !validateFile(f));
+        if (validFiles.length) {
+          onFilesSelect(validFiles);
+        }
+      } else {
+        handleFileSelect(files[0]);
+      }
     }
-  }, [handleFileSelect]);
+  }, [handleFileSelect, multiple, onFilesSelect, validateFile]);
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      handleFileSelect(files[0]);
+      if (multiple && onFilesSelect) {
+        const fileArray = Array.from(files).filter((f) => !validateFile(f));
+        if (fileArray.length) {
+          onFilesSelect(fileArray);
+        }
+      } else {
+        handleFileSelect(files[0]);
+      }
     }
-  }, [handleFileSelect]);
+  }, [handleFileSelect, multiple, onFilesSelect, validateFile]);
 
   const handleClick = () => {
     const input = document.getElementById(`file-input-${testId}`) as HTMLInputElement;
@@ -159,6 +177,7 @@ export default function FileUploadZone({
           className="hidden"
           data-testid={`input-file-${testId}`}
           disabled={isLoading}
+          multiple={multiple}
         />
         
         {error && (

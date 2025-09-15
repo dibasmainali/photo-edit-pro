@@ -28,6 +28,7 @@ export default function Home() {
   useEffect(() => {
     // Scroll to top when component mounts
     window.scrollTo(0, 0);
+    document.title = "PhotoPro — Professional Photo Processing Made Simple";
     
     // Animate stats on load
     const timer = setTimeout(() => {
