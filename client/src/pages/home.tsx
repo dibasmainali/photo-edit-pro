@@ -88,30 +88,16 @@ export default function Home() {
   ];
 
   return (
-    <div className="w-full">
+    <div className="w-full bg-gray-50 min-h-screen">
       {/* Hero Section */}
-      <section className="relative py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {/* Floating Particles */}
-        <div className="floating-particles">
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-          <div className="particle"></div>
-        </div>
-        
-        <div className="max-w-6xl mx-auto text-center relative z-10">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-card mb-6 leading-tight">
-          <span className="text-purple-400">
-          Professional Photo Processing</span>
-            <span className="block text-card/90">Made Simple</span>
+      <section className="relative py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto text-center">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-gray-800 mb-6 leading-tight">
+            <span className="text-red-500">Professional Photo Processing</span>
+            <span className="block text-gray-700">Made Simple</span>
           </h1>
-          <p className="text-lg sm:text-xl text-card/80 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Combine images without losing quality and enhance photos with real-time editing controls. 
+          <p className="text-lg sm:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Compress images without losing quality and enhance photos with real-time editing controls. 
             All processing happens in your browser for maximum privacy and speed.
           </p>
           
@@ -119,7 +105,7 @@ export default function Home() {
             <Link href="/compressor">
               <Button 
                 size="lg" 
-                className="w-full sm:w-auto hero-gradient text-white px-8 py-4 rounded-xl font-semibold hover:shadow-2xl hover:shadow-primary/40 transition-all duration-300 transform hover:scale-105 group"
+                className="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group"
                 data-testid="button-start-compressing"
               >
                 <Combine className="mr-3 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
@@ -131,7 +117,7 @@ export default function Home() {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="w-full sm:w-auto bg-card/20 backdrop-blur-sm text-white border-2 border-primary/30 px-8 py-4 rounded-xl font-semibold hover:bg-primary/20 hover:border-primary/60 transition-all duration-300 transform hover:scale-105 group"
+                className="w-full sm:w-auto bg-white text-gray-700 border-2 border-gray-300 px-8 py-4 rounded-xl font-semibold hover:bg-red-50 hover:border-red-300 hover:text-red-600 transition-all duration-300 transform hover:scale-105 group"
                 data-testid="button-enhance-photos"
               >
                 <Sparkles className="mr-3 h-5 w-5 group-hover:animate-pulse" />
@@ -142,7 +128,7 @@ export default function Home() {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="w-full sm:w-auto bg-card/20 backdrop-blur-sm text-white border-2 border-accent/30 px-8 py-4 rounded-xl font-semibold hover:bg-accent/20 hover:border-accent/60 transition-all duration-300 transform hover:scale-105 group"
+                className="w-full sm:w-auto bg-white text-gray-700 border-2 border-gray-300 px-8 py-4 rounded-xl font-semibold hover:bg-red-50 hover:border-red-300 hover:text-red-600 transition-all duration-300 transform hover:scale-105 group"
                 data-testid="button-convert-formats"
               >
                 <RefreshCw className="mr-3 h-5 w-5 group-hover:rotate-180 transition-transform duration-500" />
@@ -152,97 +138,92 @@ export default function Home() {
           </div>
           
           {/* Stats Section */}
-          <div className="mt-12 sm:mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 max-w-4xl mx-auto">
-            <div className="text-center group">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <TrendingUp className="h-8 w-8 text-white" />
+          <div className="mt-12 sm:mt-16 bg-white rounded-xl shadow-lg p-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
+              <div className="text-center group">
+                <div className="w-16 h-16 mx-auto mb-4 bg-red-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <TrendingUp className="h-8 w-8 text-white" />
+                </div>
+                <div className="text-3xl font-bold text-gray-800 mb-2">
+                  {stats.imagesProcessed.toLocaleString()}+
+                </div>
+                <div className="text-gray-600">Images Processed</div>
               </div>
-              <div className="text-3xl font-bold text-white mb-2">
-                {stats.imagesProcessed.toLocaleString()}+
+              <div className="text-center group">
+                <div className="w-16 h-16 mx-auto mb-4 bg-red-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <Clock className="h-8 w-8 text-white" />
+                </div>
+                <div className="text-3xl font-bold text-gray-800 mb-2">
+                  {stats.timeSaved}+
+                </div>
+                <div className="text-gray-600">Hours Saved</div>
               </div>
-              <div className="text-card/80">Images Processed</div>
-            </div>
-            <div className="text-center group">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-accent to-success rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <Clock className="h-8 w-8 text-white" />
+              <div className="text-center group">
+                <div className="w-16 h-16 mx-auto mb-4 bg-red-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <Star className="h-8 w-8 text-white" />
+                </div>
+                <div className="text-3xl font-bold text-gray-800 mb-2">
+                  {stats.users.toLocaleString()}+
+                </div>
+                <div className="text-gray-600">Happy Users</div>
               </div>
-              <div className="text-3xl font-bold text-white mb-2">
-                {stats.timeSaved}+
-              </div>
-              <div className="text-card/80">Hours Saved</div>
-            </div>
-            <div className="text-center group">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-secondary to-primary rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <Star className="h-8 w-8 text-white" />
-              </div>
-              <div className="text-3xl font-bold text-white mb-2">
-                {stats.users.toLocaleString()}+
-              </div>
-              <div className="text-card/80">Happy Users</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Features Grid */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8">
+      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-heading font-bold text-card mb-4">
+            <h2 className="text-3xl sm:text-4xl font-heading font-bold text-gray-800 mb-4">
               Powerful Features
             </h2>
-            <p className="text-xl text-card/80 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Everything you need to process photos quickly and efficiently
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <Card 
+              <div 
                 key={index} 
-                className="feature-card hover:card-glow transition-all duration-500 transform hover:scale-105 hover:-translate-y-2 border-0 group hover-lift"
+                className="bg-gray-50 rounded-xl p-8 hover:bg-red-50 transition-all duration-300 transform hover:scale-105 hover:-translate-y-2 shadow-lg group"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <CardContent className="p-8 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-6 shadow-lg shadow-primary/20 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
+                <div className="w-16 h-16 rounded-xl bg-red-500 flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                  <div className="text-white">
                     {feature.icon}
                   </div>
-                  <h3 className="text-2xl font-heading font-semibold mb-4 text-foreground relative z-10 group-hover:text-primary transition-colors duration-300">
-                    {feature.title}
-                  </h3>
-                  <p className="text-muted-foreground leading-relaxed relative z-10 group-hover:text-foreground/90 transition-colors duration-300">
-                    {feature.description}
-                  </p>
-                  
-                  {/* Hover effect indicator */}
-                  <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                  </div>
-                </CardContent>
-              </Card>
+                </div>
+                <h3 className="text-2xl font-heading font-semibold mb-4 text-gray-800 group-hover:text-red-600 transition-colors duration-300">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors duration-300">
+                  {feature.description}
+                </p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8">
+      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-6xl mx-auto text-center">
-          <div className="feature-card card-glow rounded-3xl p-12 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10"></div>
-            <h2 className="text-3xl font-heading font-bold text-white mb-4 relative z-10">
+          <div className="bg-white rounded-3xl p-12 shadow-xl">
+            <h2 className="text-3xl font-heading font-bold text-gray-800 mb-4">
               Ready to Get Started?
             </h2>
-            <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto relative z-10">
+            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
               Join thousands of users who trust PhotoPro for their image processing needs. 
               Start compressing and enhancing your photos today.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/compressor">
                 <Button 
                   size="lg"
-                  className="hero-gradient text-white hover:shadow-xl hover:shadow-primary/30 transform hover:scale-105 transition-all duration-300"
+                  className="bg-red-500 hover:bg-red-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
                   data-testid="button-try-compressor"
                 >
                   Try Compressor Free
@@ -252,7 +233,7 @@ export default function Home() {
                 <Button 
                   size="lg"
                   variant="outline"
-                  className="border-primary/50 text-white hover:bg-primary/20 hover:border-primary transition-all duration-300"
+                  className="border-gray-300 text-gray-700 hover:bg-red-50 hover:border-red-300 hover:text-red-600 transition-all duration-300"
                   data-testid="button-try-enhancer"
                 >
                   Try Enhancer Free
@@ -262,7 +243,7 @@ export default function Home() {
                 <Button 
                   size="lg"
                   variant="outline"
-                  className="border-accent/50 text-white hover:bg-accent/20 hover:border-accent transition-all duration-300"
+                  className="border-gray-300 text-gray-700 hover:bg-red-50 hover:border-red-300 hover:text-red-600 transition-all duration-300"
                   data-testid="button-try-converter"
                 >
                   Try Converter Free

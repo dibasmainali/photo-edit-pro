@@ -105,33 +105,30 @@ export default function FileUploadZone({
   return (
     <div className="text-center mb-8">
       <div
-        className={`drag-zone border-2 border-dashed rounded-xl p-12 text-center transition-all duration-300 cursor-pointer relative overflow-hidden group ${
+        className={`border-2 border-dashed rounded-xl p-12 text-center transition-all duration-300 cursor-pointer relative overflow-hidden group ${
           isDragOver
-            ? "drag-over border-accent bg-accent/10 transform scale-102"
-            : "border-border hover:border-primary hover:bg-primary/5"
-        } ${error ? "border-destructive bg-destructive/5" : ""} ${isLoading ? "pointer-events-none" : ""}`}
+            ? "border-red-500 bg-red-50 transform scale-102"
+            : "border-gray-300 hover:border-red-400 hover:bg-red-50"
+        } ${error ? "border-red-500 bg-red-50" : ""} ${isLoading ? "pointer-events-none" : ""}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={handleClick}
         data-testid={testId}
       >
-        {/* Animated background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        
         {/* Loading overlay */}
         {isLoading && (
-          <div className="absolute inset-0 bg-card/80 backdrop-blur-sm flex items-center justify-center z-10">
+          <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-10">
             <div className="text-center">
-              <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin text-primary" />
-              <p className="text-sm text-muted-foreground">Processing...</p>
+              <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin text-red-500" />
+              <p className="text-sm text-gray-600">Processing...</p>
             </div>
           </div>
         )}
         
         <div className="relative z-10">
           {icon || (
-            <div className="mx-auto mb-6 h-16 w-16 text-muted-foreground group-hover:text-primary transition-colors duration-300">
+            <div className="mx-auto mb-6 h-16 w-16 text-gray-400 group-hover:text-red-500 transition-colors duration-300">
               {isLoading ? (
                 <Loader2 className="h-16 w-16 animate-spin" />
               ) : (
@@ -140,15 +137,15 @@ export default function FileUploadZone({
             </div>
           )}
           
-          <h3 className="text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors duration-300">
+          <h3 className="text-xl font-semibold text-gray-800 mb-2 group-hover:text-red-600 transition-colors duration-300">
             {title}
           </h3>
-          <p className="text-muted-foreground mb-6 group-hover:text-foreground/90 transition-colors duration-300">
+          <p className="text-gray-600 mb-6 group-hover:text-gray-700 transition-colors duration-300">
             {description}
           </p>
           
           <Button 
-            className="mb-4 group-hover:scale-105 transition-transform duration-300" 
+            className="mb-4 bg-red-500 hover:bg-red-600 text-white group-hover:scale-105 transition-transform duration-300" 
             data-testid={`button-browse-${testId}`}
             disabled={isLoading}
           >
@@ -162,9 +159,9 @@ export default function FileUploadZone({
           
           <div className="flex flex-wrap justify-center gap-2 mb-4">
             {supportedFormats.split('•').map((format, index) => (
-              <Badge key={index} variant="secondary" className="text-xs">
+              <span key={index} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
                 {format.trim()}
-              </Badge>
+              </span>
             ))}
           </div>
         </div>
@@ -182,9 +179,9 @@ export default function FileUploadZone({
         
         {error && (
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20">
-            <div className="flex items-center gap-2 bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">
-              <AlertCircle className="h-4 w-4 text-destructive" />
-              <p className="text-destructive text-sm font-medium" data-testid={`error-${testId}`}>
+            <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+              <AlertCircle className="h-4 w-4 text-red-500" />
+              <p className="text-red-600 text-sm font-medium" data-testid={`error-${testId}`}>
                 {error}
               </p>
             </div>

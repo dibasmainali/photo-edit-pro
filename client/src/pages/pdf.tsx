@@ -59,73 +59,153 @@ export default function PDFConverter() {
   };
 
   return (
-    <div className="py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl sm:text-5xl font-heading font-bold text-card mb-4">PDF Converter</h1>
-          <p className="text-xl text-card/80 max-w-2xl mx-auto">Select multiple photos and combine them into a single PDF, entirely in your browser.</p>
+          <h1 className="text-4xl sm:text-5xl font-bold text-gray-800 mb-4">PDF Converter</h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+            Transform your images into professional PDFs. Combine multiple photos, adjust layouts, and create documents instantly.
+          </p>
         </div>
 
-        <Card className="feature-card card-glow shadow-xl border-0 mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center text-2xl font-heading">
-              <FilePlus2 className="mr-3 text-primary" />
-              Add Images
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <FileUploadZone
-              onFileSelect={handleSingleFile}
-              onFilesSelect={addFiles}
-              multiple
-              isLoading={isProcessing}
-              title="Drop your images here"
-              description="or click to select multiple files"
-              supportedFormats="Supports: JPEG, PNG, WebP, GIF, BMP • Max size: 10MB"
-              testId="pdf-upload"
-            />
-            {!!images.length && (
-              <div className="mt-4 text-sm text-muted-foreground">
-                <Badge variant="secondary" className="mr-2">{images.length} selected</Badge>
-                Total size: {formatFileSize(images.reduce((acc, img) => acc + img.file.size, 0))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {!!images.length && (
-          <Card className="feature-card card-glow shadow-xl border-0 mb-8">
-            <CardHeader>
-              <CardTitle className="text-2xl font-heading">Reorder and Review</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {images.map((img, idx) => (
-                  <div key={idx} className="relative bg-muted rounded-lg overflow-hidden">
-                    <img src={img.dataUrl} alt={img.name} className="w-full h-40 object-cover" />
-                    <div className="absolute top-2 left-2 bg-card/80 text-xs px-2 py-1 rounded">
-                      {idx + 1}
-                    </div>
-                    <Button size="icon" variant="destructive" className="absolute top-2 right-2" onClick={() => removeImage(idx)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+        {/* Features Section - Only show when no images */}
+        {!images.length && (
+          <>
+            <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+              <h2 className="text-3xl font-bold text-gray-800 text-center mb-8">
+                PDF Creation Features
+              </h2>
+              <div className="grid md:grid-cols-3 gap-8">
+                <div className="text-center p-6 rounded-lg bg-gray-50 hover:bg-red-50 transition-colors duration-300">
+                  <div className="w-24 h-24 mx-auto mb-6 bg-red-500 rounded-full flex items-center justify-center shadow-lg">
+                    <FilePlus2 className="h-12 w-12 text-white" />
                   </div>
-                ))}
+                  <h3 className="text-2xl font-bold text-gray-800 mb-4">Multi-Image Support</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Upload multiple images at once and combine them into a single, organized PDF document.
+                  </p>
+                </div>
+
+                <div className="text-center p-6 rounded-lg bg-gray-50 hover:bg-red-50 transition-colors duration-300">
+                  <div className="w-24 h-24 mx-auto mb-6 bg-red-500 rounded-full flex items-center justify-center shadow-lg">
+                    <Download className="h-12 w-12 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-800 mb-4">Customizable Layout</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Choose page size, orientation, and fit mode to create PDFs that match your exact requirements.
+                  </p>
+                </div>
+
+                <div className="text-center p-6 rounded-lg bg-gray-50 hover:bg-red-50 transition-colors duration-300">
+                  <div className="w-24 h-24 mx-auto mb-6 bg-red-500 rounded-full flex items-center justify-center shadow-lg">
+                    <Trash2 className="h-12 w-12 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-800 mb-4">Easy Management</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Reorder images, remove unwanted ones, and preview your PDF layout before downloading.
+                  </p>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+
+            {/* Use Cases */}
+            <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+              <h2 className="text-3xl font-bold text-gray-800 text-center mb-8">Perfect For</h2>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="text-center p-6 rounded-lg bg-gray-50 hover:bg-red-50 transition-colors duration-300">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-red-500 rounded-full flex items-center justify-center">
+                    <FilePlus2 className="h-8 w-8 text-white" />
+                  </div>
+                  <h4 className="font-bold text-lg text-gray-800 mb-2">Scan to PDF</h4>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Convert scanned documents and receipts into organized PDFs
+                  </p>
+                </div>
+                
+                <div className="text-center p-6 rounded-lg bg-gray-50 hover:bg-red-50 transition-colors duration-300">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-red-500 rounded-full flex items-center justify-center">
+                    <Download className="h-8 w-8 text-white" />
+                  </div>
+                  <h4 className="font-bold text-lg text-gray-800 mb-2">Photo Albums</h4>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Create digital photo albums and portfolios for sharing
+                  </p>
+                </div>
+                
+                <div className="text-center p-6 rounded-lg bg-gray-50 hover:bg-red-50 transition-colors duration-300">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-red-500 rounded-full flex items-center justify-center">
+                    <Trash2 className="h-8 w-8 text-white" />
+                  </div>
+                  <h4 className="font-bold text-lg text-gray-800 mb-2">Visual Reports</h4>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Combine charts, graphs, and images into professional reports
+                  </p>
+                </div>
+                
+                <div className="text-center p-6 rounded-lg bg-gray-50 hover:bg-red-50 transition-colors duration-300">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-red-500 rounded-full flex items-center justify-center">
+                    <FilePlus2 className="h-8 w-8 text-white" />
+                  </div>
+                  <h4 className="font-bold text-lg text-gray-800 mb-2">Image Catalogs</h4>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Create product catalogs and presentation materials
+                  </p>
+                </div>
+              </div>
+            </div>
+          </>
         )}
 
-        <Card className="feature-card card-glow shadow-xl border-0">
-          <CardHeader>
-            <CardTitle className="text-2xl font-heading">PDF Settings</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+          <div className="flex items-center mb-6">
+            <FilePlus2 className="mr-3 text-red-500 h-6 w-6" />
+            <h2 className="text-2xl font-bold text-gray-800">Add Images</h2>
+          </div>
+          <FileUploadZone
+            onFileSelect={handleSingleFile}
+            onFilesSelect={addFiles}
+            multiple
+            isLoading={isProcessing}
+            title="Drop your images here"
+            description="or click to select multiple files"
+            supportedFormats="Supports: JPEG, PNG, WebP, GIF, BMP • Max size: 10MB"
+            testId="pdf-upload"
+          />
+          {!!images.length && (
+            <div className="mt-4 text-sm text-gray-600">
+              <span className="bg-gray-100 px-2 py-1 rounded mr-2">{images.length} selected</span>
+              Total size: {formatFileSize(images.reduce((acc, img) => acc + img.file.size, 0))}
+            </div>
+          )}
+        </div>
+
+        {!!images.length && (
+          <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Reorder and Review</h2>
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {images.map((img, idx) => (
+                <div key={idx} className="relative bg-gray-100 rounded-lg overflow-hidden">
+                  <img src={img.dataUrl} alt={img.name} className="w-full h-40 object-cover" />
+                  <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                    {idx + 1}
+                  </div>
+                  <Button size="icon" className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white" onClick={() => removeImage(idx)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="bg-white rounded-xl shadow-lg p-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">PDF Settings</h2>
+          <div className="space-y-6">
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm mb-2">Page Size</label>
+                <label className="block text-sm font-medium text-gray-800 mb-2">Page Size</label>
                 <select
-                  className="w-full bg-card border border-border rounded-md p-2"
+                  className="w-full bg-white border border-gray-300 rounded-md p-3 text-gray-700 focus:border-red-500 focus:ring-1 focus:ring-red-500"
                   value={settings.pageSize}
                   onChange={(e) => setSettings((s) => ({ ...s, pageSize: e.target.value as PDFSettings["pageSize"] }))}
                 >
@@ -135,9 +215,9 @@ export default function PDFConverter() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm mb-2">Orientation</label>
+                <label className="block text-sm font-medium text-gray-800 mb-2">Orientation</label>
                 <select
-                  className="w-full bg-card border border-border rounded-md p-2"
+                  className="w-full bg-white border border-gray-300 rounded-md p-3 text-gray-700 focus:border-red-500 focus:ring-1 focus:ring-red-500"
                   value={settings.orientation}
                   onChange={(e) => setSettings((s) => ({ ...s, orientation: e.target.value as PDFSettings["orientation"] }))}
                 >
@@ -146,9 +226,9 @@ export default function PDFConverter() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm mb-2">Fit Mode</label>
+                <label className="block text-sm font-medium text-gray-800 mb-2">Fit Mode</label>
                 <select
-                  className="w-full bg-card border border-border rounded-md p-2"
+                  className="w-full bg-white border border-gray-300 rounded-md p-3 text-gray-700 focus:border-red-500 focus:ring-1 focus:ring-red-500"
                   value={settings.fitMode}
                   onChange={(e) => setSettings((s) => ({ ...s, fitMode: e.target.value as PDFSettings["fitMode"] }))}
                 >
@@ -159,10 +239,10 @@ export default function PDFConverter() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm mb-2">Margin (mm)</label>
+                <label className="block text-sm font-medium text-gray-800 mb-2">Margin (mm)</label>
                 <input
                   type="number"
-                  className="w-full bg-card border border-border rounded-md p-2"
+                  className="w-full bg-white border border-gray-300 rounded-md p-3 text-gray-700 focus:border-red-500 focus:ring-1 focus:ring-red-500"
                   value={settings.margin}
                   min={0}
                   max={50}
@@ -171,14 +251,19 @@ export default function PDFConverter() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button className="w-full sm:w-auto bg-success hover:bg-success/90" size="lg" onClick={handleCreatePDF} disabled={!images.length || isProcessing}>
+            <div className="flex flex-col sm:flex-row gap-3 pt-4">
+              <Button 
+                className="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white" 
+                size="lg" 
+                onClick={handleCreatePDF} 
+                disabled={!images.length || isProcessing}
+              >
                 <Download className="mr-2 h-4 w-4" />
                 Download PDF
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -31,6 +31,14 @@ export function useImageProcessing() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const originalCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
+  // Check WebP support
+  const checkWebPSupport = useCallback((): boolean => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1;
+    canvas.height = 1;
+    return canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+  }, []);
+
   // Initialize canvases
   useEffect(() => {
     if (!canvasRef.current) {
@@ -133,20 +141,123 @@ export function useImageProcessing() {
       // Apply filters
       applyFilters(canvas, ctx, settings);
 
-      // Convert to desired format and quality
+      // Convert to desired format with smart compression
       const mimeType = `image/${settings.format}`;
-      const quality = settings.format === 'jpeg' ? settings.quality / 100 : undefined;
-      
-      const processedDataUrl = canvas.toDataURL(mimeType, quality);
-      
-      // Calculate processed size (approximate)
-      const base64Data = processedDataUrl.split(',')[1];
-      const processedSize = Math.round((base64Data.length * 3) / 4);
+
+      const encodeWithQuality = (q?: number): { url: string; size: number } => {
+        try {
+          const url = canvas.toDataURL(mimeType, q);
+          // Check if the browser actually supports the format
+          if (url.startsWith('data:image/png') && settings.format !== 'png') {
+            // Browser doesn't support the format, fallback to PNG
+            console.warn(`Browser doesn't support ${settings.format}, falling back to PNG`);
+            const fallbackUrl = canvas.toDataURL('image/png');
+            const base64 = fallbackUrl.split(',')[1] || '';
+            const size = Math.round((base64.length * 3) / 4);
+            return { url: fallbackUrl, size };
+          }
+          const base64 = url.split(',')[1] || '';
+          const size = Math.round((base64.length * 3) / 4);
+          return { url, size };
+        } catch (error) {
+          console.error('Error encoding image:', error);
+          // Fallback to PNG if there's an error
+          const fallbackUrl = canvas.toDataURL('image/png');
+          const base64 = fallbackUrl.split(',')[1] || '';
+          const size = Math.round((base64.length * 3) / 4);
+          return { url: fallbackUrl, size };
+        }
+      };
+
+      let targetUrl = '';
+      let targetSize = 0;
+
+      if (settings.format === 'jpeg') {
+        // JPEG compression with quality control
+        const quality = settings.quality / 100;
+        const result = encodeWithQuality(quality);
+        targetUrl = result.url;
+        targetSize = result.size;
+      } else if (settings.format === 'webp') {
+        // WebP compression with quality control
+        if (checkWebPSupport()) {
+          const quality = settings.quality / 100;
+          const result = encodeWithQuality(quality);
+          targetUrl = result.url;
+          targetSize = result.size;
+        } else {
+          // Fallback to JPEG if WebP is not supported
+          console.warn('WebP not supported, falling back to JPEG');
+          const quality = settings.quality / 100;
+          const result = encodeWithQuality(quality);
+          targetUrl = result.url;
+          targetSize = result.size;
+        }
+      } else if (settings.format === 'png') {
+        // PNG compression through optimization and potential resizing
+        // PNG is lossless, so we use quality as a compression factor (0-100)
+        const compressionFactor = settings.quality / 100;
+        console.log('PNG compression - Quality:', settings.quality, 'Factor:', compressionFactor);
+        
+        // Use a more aggressive compression formula for PNG
+        const scaleFactor = Math.max(0.3, compressionFactor * 0.8); // Ensure minimum 30% of original size
+        
+        if (compressionFactor < 0.95) { // More aggressive threshold for PNG compression
+          // Create a smaller canvas for compression
+          const originalWidth = canvas.width;
+          const originalHeight = canvas.height;
+          const newWidth = Math.round(originalWidth * scaleFactor);
+          const newHeight = Math.round(originalHeight * scaleFactor);
+          
+          // Create temporary canvas for resizing
+          const tempCanvas = document.createElement('canvas');
+          const tempCtx = tempCanvas.getContext('2d');
+          
+          if (tempCtx) {
+            tempCanvas.width = newWidth;
+            tempCanvas.height = newHeight;
+            
+            // Use high-quality scaling
+            tempCtx.imageSmoothingEnabled = true;
+            tempCtx.imageSmoothingQuality = 'high';
+            
+            // Draw resized image
+            tempCtx.drawImage(canvas, 0, 0, newWidth, newHeight);
+            
+            const result = {
+              url: tempCanvas.toDataURL('image/png'),
+              size: Math.round((tempCanvas.toDataURL('image/png').split(',')[1] || '').length * 3 / 4)
+            };
+            
+            console.log('PNG compression result:', {
+              originalSize: imageData?.originalSize,
+              newSize: result.size,
+              originalDimensions: `${originalWidth}x${originalHeight}`,
+              newDimensions: `${newWidth}x${newHeight}`,
+              scaleFactor: scaleFactor.toFixed(2),
+              compressionRatio: imageData?.originalSize ? ((imageData.originalSize - result.size) / imageData.originalSize * 100).toFixed(1) + '%' : 'N/A'
+            });
+            
+            targetUrl = result.url;
+            targetSize = result.size;
+          } else {
+            // Fallback to original if temp canvas fails
+            const result = encodeWithQuality(undefined);
+            targetUrl = result.url;
+            targetSize = result.size;
+          }
+        } else {
+          // No compression needed, use original size
+          const result = encodeWithQuality(undefined);
+          targetUrl = result.url;
+          targetSize = result.size;
+        }
+      }
 
       setImageData(prev => prev ? {
         ...prev,
-        processedDataUrl,
-        processedSize,
+        processedDataUrl: targetUrl,
+        processedSize: targetSize,
         settings,
       } : null);
 
@@ -162,12 +273,12 @@ export function useImageProcessing() {
     try {
       const data = await loadImage(file);
       setImageData(data);
-      // Process with default settings
-      await new Promise(resolve => setTimeout(resolve, 100)); // Allow state to update
-      processImage(data.settings);
+      // Process with default settings after a short delay to ensure state is updated
+      setTimeout(() => {
+        processImage(data.settings);
+      }, 50);
     } catch (error) {
       console.error('Error loading image:', error);
-    } finally {
       setIsProcessing(false);
     }
   }, [loadImage, processImage]);
@@ -217,5 +328,6 @@ export function useImageProcessing() {
     reset,
     getCompressionRatio,
     formatFileSize,
+    checkWebPSupport,
   };
 }

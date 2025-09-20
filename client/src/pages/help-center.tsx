@@ -130,178 +130,172 @@ export default function HelpCenter() {
     .filter((category) => category.questions.length > 0);
 
   return (
-    <div className="py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl sm:text-5xl font-heading font-bold text-card mb-4">
+          <h1 className="text-4xl sm:text-5xl font-bold text-gray-800 mb-4">
             Help Center
           </h1>
-          <p className="text-xl text-card/80 max-w-2xl mx-auto mb-8">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
             Find answers to common questions and learn how to get the most out of PhotoPro
           </p>
 
           {/* Search */}
           <div className="relative max-w-md mx-auto">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
               placeholder="Search for help..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-10 bg-white border-gray-300 focus:border-red-500 focus:ring-red-500"
             />
           </div>
         </div>
 
         {/* Quick Links */}
         <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <Card className="feature-card card-glow border-0 hover:scale-105 transition-transform duration-300">
-            <CardContent className="p-6 text-center">
-              <BookOpen className="w-12 h-12 text-primary mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">User Guide</h3>
-              <p className="text-muted-foreground text-sm mb-4">
-                Step-by-step tutorials for all PhotoPro features
-              </p>
-              <Button variant="outline" size="sm">
-                View Guide
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-xl shadow-lg p-6 text-center hover:scale-105 transition-transform duration-300">
+            <BookOpen className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">User Guide</h3>
+            <p className="text-gray-600 text-sm mb-4">
+              Step-by-step tutorials for all PhotoPro features
+            </p>
+            <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-red-50 hover:border-red-300 hover:text-red-600">
+              View Guide
+            </Button>
+          </div>
 
-          <Card className="feature-card card-glow border-0 hover:scale-105 transition-transform duration-300">
-            <CardContent className="p-6 text-center">
-              <MessageCircle className="w-12 h-12 text-accent mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Contact Support</h3>
-              <p className="text-muted-foreground text-sm mb-4">
-                Can't find what you're looking for? We're here to help
-              </p>
-              <Link href="/contact-us">
-                <Button variant="outline" size="sm">
-                  Contact Us
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          <Card className="feature-card card-glow border-0 hover:scale-105 transition-transform duration-300">
-            <CardContent className="p-6 text-center">
-              <Download className="w-12 h-12 text-success mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Download App</h3>
-              <p className="text-muted-foreground text-sm mb-4">
-                Get PhotoPro as a desktop app for offline use
-              </p>
-              <Button variant="outline" size="sm">
-                Download
+          <div className="bg-white rounded-xl shadow-lg p-6 text-center hover:scale-105 transition-transform duration-300">
+            <MessageCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">Contact Support</h3>
+            <p className="text-gray-600 text-sm mb-4">
+              Can't find what you're looking for? We're here to help
+            </p>
+            <Link href="/contact-us">
+              <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-red-50 hover:border-red-300 hover:text-red-600">
+                Contact Us
               </Button>
-            </CardContent>
-          </Card>
+            </Link>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-lg p-6 text-center hover:scale-105 transition-transform duration-300">
+            <Download className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">Download App</h3>
+            <p className="text-gray-600 text-sm mb-4">
+              Get PhotoPro as a desktop app for offline use
+            </p>
+            <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-red-50 hover:border-red-300 hover:text-red-600">
+              Download
+            </Button>
+          </div>
         </div>
 
         {/* Resource Links */}
-        <Card className="feature-card card-glow border-0 mb-12">
-          <CardContent className="p-6">
-            <div className="grid md:grid-cols-3 gap-6">
-              <div>
-                <h4 className="text-sm uppercase tracking-wide text-purple-300 mb-3">Popular Topics</h4>
-                <ul className="text-sm text-purple-100/90 space-y-2 list-disc list-inside">
-                  <li>Best settings for web images</li>
-                  <li>When to use PNG vs JPEG vs WebP</li>
-                  <li>Improving contrast without noise</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="text-sm uppercase tracking-wide text-purple-300 mb-3">Troubleshooting</h4>
-                <ul className="text-sm text-purple-100/90 space-y-2 list-disc list-inside">
-                  <li>Upload stuck at 0%: what to check</li>
-                  <li>Unsupported format? Quick fixes</li>
-                  <li>Why is my download blank?</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="text-sm uppercase tracking-wide text-purple-300 mb-3">Guides</h4>
-                <ul className="text-sm text-purple-100/90 space-y-2 list-disc list-inside">
-                  <li>Compressing images for email</li>
-                  <li>Enhance portraits tastefully</li>
-                  <li>Convert transparent images</li>
-                </ul>
-              </div>
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-12">
+          <div className="grid md:grid-cols-3 gap-6">
+            <div>
+              <h4 className="text-sm uppercase tracking-wide text-red-500 font-semibold mb-3">Popular Topics</h4>
+              <ul className="text-sm text-gray-600 space-y-2 list-disc list-inside">
+                <li>Best settings for web images</li>
+                <li>When to use PNG vs JPEG vs WebP</li>
+                <li>Improving contrast without noise</li>
+              </ul>
             </div>
-          </CardContent>
-        </Card>
+            <div>
+              <h4 className="text-sm uppercase tracking-wide text-red-500 font-semibold mb-3">Troubleshooting</h4>
+              <ul className="text-sm text-gray-600 space-y-2 list-disc list-inside">
+                <li>Upload stuck at 0%: what to check</li>
+                <li>Unsupported format? Quick fixes</li>
+                <li>Why is my download blank?</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-sm uppercase tracking-wide text-red-500 font-semibold mb-3">Guides</h4>
+              <ul className="text-sm text-gray-600 space-y-2 list-disc list-inside">
+                <li>Compressing images for email</li>
+                <li>Enhance portraits tastefully</li>
+                <li>Convert transparent images</li>
+              </ul>
+            </div>
+          </div>
+        </div>
 
         {/* FAQ Section */}
         <div className="space-y-8">
-          <h2 className="text-3xl font-heading font-bold text-card text-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-800 text-center mb-8">
             Frequently Asked Questions
           </h2>
 
           {filteredFAQ.length > 0 ? (
             filteredFAQ.map((category, categoryIndex) => (
-              <Card
+              <div
                 key={categoryIndex}
-                className="feature-card card-glow border-0"
+                className="bg-white rounded-xl shadow-lg"
               >
-                <CardHeader>
-                  <CardTitle className="flex items-center text-xl">
-                    <span className="mr-3 text-primary">{category.icon}</span>
+                <div className="p-6 border-b border-gray-200">
+                  <h3 className="flex items-center text-xl font-semibold text-gray-800">
+                    <span className="mr-3 text-red-500">{category.icon}</span>
                     {category.category}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
+                  </h3>
+                </div>
+                <div className="p-6">
                   <Accordion type="single" collapsible className="w-full">
                     {category.questions.map((item, index) => (
                       <AccordionItem
                         key={index}
                         value={`item-${categoryIndex}-${index}`}
+                        className="border-gray-200"
                       >
-                        <AccordionTrigger className="text-left">
+                        <AccordionTrigger className="text-left text-gray-800 hover:text-red-600">
                           {item.question}
                         </AccordionTrigger>
-                        <AccordionContent className="text-muted-foreground">
+                        <AccordionContent className="text-gray-600">
                           {item.answer}
                         </AccordionContent>
                       </AccordionItem>
                     ))}
                   </Accordion>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))
           ) : (
-            <Card className="feature-card border-0">
-              <CardContent className="p-12 text-center">
-                <Search className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No results found</h3>
-                <p className="text-muted-foreground">
+            <div className="bg-white rounded-xl shadow-lg">
+              <div className="p-12 text-center">
+                <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">No results found</h3>
+                <p className="text-gray-600">
                   Try adjusting your search terms or browse our categories above.
                 </p>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
         </div>
 
         {/* Still Need Help Section */}
-        <Card className="feature-card card-glow border-0 mt-12">
-          <CardContent className="p-8 text-center">
-            <MessageCircle className="w-16 h-16 text-primary mx-auto mb-4" />
-            <h3 className="text-2xl font-semibold mb-4">Still Need Help?</h3>
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Can't find the answer you're looking for? Our support team is here
-              to help you get the most out of PhotoPro.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/contact-us">
-                <Button className="hero-gradient text-white">
-                  Contact Support
-                </Button>
-              </Link>
-              <Link href="/contact-us">
-                <Button variant="outline">Submit Feedback</Button>
-              </Link>
-            </div>
-            <Separator className="my-6 bg-purple-600/40" />
-            <p className="text-xs text-purple-300">Response time: within 24 hours on business days</p>
-          </CardContent>
-        </Card>
+        <div className="bg-white rounded-xl shadow-lg p-8 text-center mt-12">
+          <MessageCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4">Still Need Help?</h3>
+          <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+            Can't find the answer you're looking for? Our support team is here
+            to help you get the most out of PhotoPro.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/contact-us">
+              <Button className="bg-red-500 hover:bg-red-600 text-white">
+                Contact Support
+              </Button>
+            </Link>
+            <Link href="/contact-us">
+              <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-red-50 hover:border-red-300 hover:text-red-600">
+                Submit Feedback
+              </Button>
+            </Link>
+          </div>
+          <div className="border-t border-gray-200 mt-6 pt-6">
+            <p className="text-xs text-gray-500">Response time: within 24 hours on business days</p>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 // TermsOfService.jsx
-import { ShieldCheck, BookMarked, Link as LinkIcon, Clock } from "lucide-react";
+import { ShieldCheck, BookMarked, Link as LinkIcon, Clock, CheckCircle2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
@@ -11,7 +11,9 @@ export default function TermsOfService() {
     <div className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-800 to-purple-900 text-white p-6">
       {/* Header */}
       <div className="text-center mb-10">
-        <ShieldCheck size={40} className="mx-auto mb-3 text-purple-300" />
+        <div className="mx-auto mb-4 w-16 h-16 rounded-2xl hero-gradient flex items-center justify-center shadow-lg shadow-primary/30">
+          <ShieldCheck className="text-white" />
+        </div>
         <h1 className="text-4xl font-bold mb-2">Terms of Service</h1>
         <p className="text-purple-200 flex items-center justify-center gap-2"><Clock className="w-4 h-4" /> Last updated: September 14, 2025</p>
       </div>
@@ -19,7 +21,7 @@ export default function TermsOfService() {
       {/* Content */}
       <div className="max-w-5xl mx-auto grid lg:grid-cols-[280px,1fr] gap-8">
         {/* TOC */}
-        <Card className="bg-white/10 border-0 h-fit">
+        <Card className="bg-white/10 border-0 h-fit sticky top-6 self-start">
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-4">
               <BookMarked className="text-purple-300" />
@@ -38,90 +40,36 @@ export default function TermsOfService() {
           </CardContent>
         </Card>
 
-        <div className="bg-white/10 p-8 rounded-2xl shadow-lg space-y-8">
-        {/* Intro */}
-        <section id="acceptance">
-          <h2 className="text-2xl font-semibold mb-3">1. Acceptance of Terms</h2>
-          <p className="text-purple-200 leading-relaxed">
-            By using our website, tools, or services, you agree to comply with
-            these Terms of Service. If you do not agree, you must stop using our
-            services immediately.
-          </p>
-        </section>
+        {/* Numbered sections with accent border and checks */}
+        <div className="space-y-6">
+          {[
+            { id: "acceptance", title: "Acceptance of Terms", body: "By using our website, tools, or services, you agree to comply with these Terms of Service. If you do not agree, you must stop using our services immediately." },
+            { id: "permitted", title: "Permitted Use", body: "You are granted a limited, non-transferable license to use the platform strictly for personal and non-commercial purposes. Any misuse, including hacking, distributing malware, or reselling our tools, is prohibited." },
+            { id: "ip", title: "Intellectual Property", body: "All content, design, and tools available on this website remain the intellectual property of our team. You may not copy, modify, or distribute our resources without prior written consent." },
+            { id: "privacy", title: "Privacy & Data Security", body: "We respect your privacy. All uploaded files are processed securely and deleted automatically after processing. For more details, please read our Privacy Policy." },
+            { id: "liability", title: "Limitation of Liability", body: "We are not liable for any loss of data, damage, or inconvenience caused by the use of our tools. All services are provided ‘as is’ without warranties of any kind." },
+            { id: "termination", title: "Termination", body: "We reserve the right to suspend or terminate your access to our services if you violate these Terms of Service." },
+            { id: "law", title: "Governing Law", body: "These Terms of Service shall be governed by and interpreted in accordance with the laws of your jurisdiction, without regard to conflict of law principles." },
+          ].map((sec, idx) => (
+            <section key={sec.id} id={sec.id} className="relative overflow-hidden rounded-2xl bg-white/10 border border-white/10">
+              <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-purple-400 to-accent"></div>
+              <div className="p-6 sm:p-8">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-8 h-8 rounded-full bg-purple-600/40 flex items-center justify-center text-sm font-bold">{idx + 1}</div>
+                  <h2 className="text-2xl font-semibold">{sec.title}</h2>
+                  <CheckCircle2 className="text-purple-300 ml-auto" />
+                </div>
+                <p className="text-purple-200 leading-relaxed">{sec.body}</p>
+              </div>
+            </section>
+          ))}
 
-        {/* Usage */}
-        <Separator className="bg-purple-600/40" />
-        <section id="permitted">
-          <h2 className="text-2xl font-semibold mb-3">2. Permitted Use</h2>
-          <p className="text-purple-200 leading-relaxed">
-            You are granted a limited, non-transferable license to use the
-            platform strictly for personal and non-commercial purposes. Any
-            misuse, including hacking, distributing malware, or reselling our
-            tools, is prohibited.
-          </p>
-        </section>
-
-        {/* Content Ownership */}
-        <Separator className="bg-purple-600/40" />
-        <section id="ip">
-          <h2 className="text-2xl font-semibold mb-3">3. Intellectual Property</h2>
-          <p className="text-purple-200 leading-relaxed">
-            All content, design, and tools available on this website remain the
-            intellectual property of our team. You may not copy, modify, or
-            distribute our resources without prior written consent.
-          </p>
-        </section>
-
-        {/* Privacy & Security */}
-        <Separator className="bg-purple-600/40" />
-        <section id="privacy">
-          <h2 className="text-2xl font-semibold mb-3">4. Privacy & Data Security</h2>
-          <p className="text-purple-200 leading-relaxed">
-            We respect your privacy. All uploaded files are processed securely
-            and deleted automatically after processing. For more details, please
-            read our <span className="underline cursor-pointer">Privacy Policy</span>.
-          </p>
-        </section>
-
-        {/* Liability */}
-        <Separator className="bg-purple-600/40" />
-        <section id="liability">
-          <h2 className="text-2xl font-semibold mb-3">5. Limitation of Liability</h2>
-          <p className="text-purple-200 leading-relaxed">
-            We are not liable for any loss of data, damage, or inconvenience
-            caused by the use of our tools. All services are provided “as is”
-            without warranties of any kind.
-          </p>
-        </section>
-
-        {/* Termination */}
-        <Separator className="bg-purple-600/40" />
-        <section id="termination">
-          <h2 className="text-2xl font-semibold mb-3">6. Termination</h2>
-          <p className="text-purple-200 leading-relaxed">
-            We reserve the right to suspend or terminate your access to our
-            services if you violate these Terms of Service.
-          </p>
-        </section>
-
-        {/* Governing Law */}
-        <Separator className="bg-purple-600/40" />
-        <section id="law">
-          <h2 className="text-2xl font-semibold mb-3">7. Governing Law</h2>
-          <p className="text-purple-200 leading-relaxed">
-            These Terms of Service shall be governed by and interpreted in
-            accordance with the laws of your jurisdiction, without regard to
-            conflict of law principles.
-          </p>
-        </section>
-
-        {/* Closing */}
-        <Separator className="bg-purple-600/40" />
-        <section id="contact" className="pt-6">
-          <p className="text-sm text-purple-300 text-center">
-            If you have any questions about these Terms, please <span className="underline cursor-pointer">Contact Us</span>.
-          </p>
-        </section>
+          <Separator className="bg-purple-600/40" />
+          <section id="contact" className="pt-2">
+            <p className="text-sm text-purple-300 text-center">
+              Questions about these Terms? <span className="underline cursor-pointer">Contact Us</span>.
+            </p>
+          </section>
         </div>
       </div>
     </div>

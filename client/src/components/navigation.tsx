@@ -31,15 +31,15 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="bg-card/95 backdrop-blur-lg border-b border-primary/20 sticky top-0 z-50 shadow-lg shadow-primary/5">
+    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
             <Link href="/" className="flex items-center space-x-3 hover:scale-105 transition-transform duration-300">
-              <div className="w-10 h-10 rounded-lg hero-gradient flex items-center justify-center shadow-lg shadow-primary/30">
+              <div className="w-10 h-10 rounded-lg bg-red-500 flex items-center justify-center shadow-lg">
                 <Camera className="text-white text-lg" />
               </div>
-              <span className="text-2xl font-heading font-bold gradient-text">PhotoPro</span>
+              <span className="text-2xl font-heading font-bold text-red-500">PhotoPro</span>
             </Link>
             
             <div className="hidden md:flex items-center space-x-6">
@@ -49,8 +49,8 @@ export default function Navigation() {
                   href={item.path}
                   className={`font-medium transition-all duration-300 px-4 py-2 rounded-xl relative ${
                     location === item.path
-                      ? "text-white bg-gradient-to-r from-primary to-secondary shadow-lg shadow-primary/30"
-                      : "text-muted-foreground hover:text-white hover:bg-primary/20 hover:shadow-md hover:shadow-primary/20"
+                      ? "text-white bg-red-500 shadow-lg"
+                      : "text-gray-600 hover:text-red-600 hover:bg-red-50"
                   }`}
                   data-testid={`nav-${item.label.toLowerCase()}`}
                 >
@@ -65,7 +65,7 @@ export default function Navigation() {
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
-              className="hover:bg-primary/20 transition-colors duration-300"
+              className="hover:bg-red-50 text-gray-600 hover:text-red-600 transition-colors duration-300"
               data-testid="button-theme-toggle"
             >
               {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -74,7 +74,7 @@ export default function Navigation() {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
+              className="md:hidden text-gray-600 hover:text-red-600 hover:bg-red-50"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               data-testid="button-menu"
             >
@@ -85,7 +85,7 @@ export default function Navigation() {
         
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-primary/20 bg-card/95 backdrop-blur-lg">
+          <div className="md:hidden border-t border-gray-200 bg-white">
             <div className="px-2 pt-2 pb-3 space-y-1">
               {navItems.map((item) => (
                 <Link
@@ -93,8 +93,8 @@ export default function Navigation() {
                   href={item.path}
                   className={`block px-3 py-2 rounded-md text-base font-medium transition-all duration-300 ${
                     location === item.path
-                      ? "text-white bg-gradient-to-r from-primary to-secondary shadow-lg shadow-primary/30"
-                      : "text-muted-foreground hover:text-white hover:bg-primary/20 hover:shadow-md hover:shadow-primary/20"
+                      ? "text-white bg-red-500 shadow-lg"
+                      : "text-gray-600 hover:text-red-600 hover:bg-red-50"
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                   data-testid={`mobile-nav-${item.label.toLowerCase()}`}
