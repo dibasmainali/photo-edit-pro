@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf';
+// Note: Use dynamic import for pdf-lib where needed to avoid type dependency at build time
 
 export interface PDFSettings {
   pageSize: 'a4' | 'letter' | 'legal';
@@ -6,6 +7,9 @@ export interface PDFSettings {
   margin: number;
   fitMode: 'fit-width' | 'fit-height' | 'fit-page' | 'original';
   quality: number;
+  addPageNumbers?: boolean;
+  addCoverPage?: boolean;
+  coverTitle?: string;
 }
 
 export interface ImageForPDF {
@@ -14,12 +18,21 @@ export interface ImageForPDF {
   name: string;
 }
 
+export interface ExternalPDFSource {
+  file: File;
+  name: string;
+  type: 'pdf';
+}
+
 export const defaultPDFSettings: PDFSettings = {
   pageSize: 'a4',
   orientation: 'portrait',
   margin: 20,
   fitMode: 'fit-page',
   quality: 0.9,
+  addPageNumbers: false,
+  addCoverPage: false,
+  coverTitle: 'My PDF',
 };
 
 export function validateImageFile(file: File, maxSize = 10 * 1024 * 1024): string | null {
@@ -151,6 +164,19 @@ export async function createPDFFromImages(
 
   let isFirstPage = true;
 
+  // Optional cover page
+  if (settings.addCoverPage) {
+    const pageDimensions = getPageDimensions(settings.pageSize, settings.orientation);
+    const centerX = pageDimensions.width / 2;
+    const centerY = pageDimensions.height / 2;
+    pdf.setFontSize(24);
+    pdf.setTextColor(40);
+    const title = settings.coverTitle || 'My PDF';
+    const titleWidth = pdf.getTextWidth(title);
+    pdf.text(title, centerX - titleWidth / 2, centerY - 10);
+    isFirstPage = false;
+  }
+
   for (let i = 0; i < images.length; i++) {
     const image = images[i];
     
@@ -184,6 +210,19 @@ export async function createPDFFromImages(
         'FAST' // Use fast rendering for better performance
       );
 
+      // Page numbers (draw after content)
+      if (settings.addPageNumbers) {
+        const pageDimensionsForText = getPageDimensions(settings.pageSize, settings.orientation);
+        pdf.setFontSize(10);
+        pdf.setTextColor(100);
+        const pageNumberText = `${i + (settings.addCoverPage ? 0 : 1)} / ${images.length + (settings.addCoverPage ? 0 : 0)}`;
+        // Place at bottom center within margins
+        const textWidth = pdf.getTextWidth(pageNumberText);
+        const x = (pageDimensionsForText.width - textWidth) / 2;
+        const y = pageDimensionsForText.height - (settings.margin / 2);
+        pdf.text(pageNumberText, x, y);
+      }
+
       isFirstPage = false;
     } catch (error) {
       console.error(`Error adding image ${image.name} to PDF:`, error);
@@ -214,4 +253,109 @@ export function generateDefaultFilename(images: ImageForPDF[]): string {
     return `${baseName}_${timestamp}.pdf`;
   }
   return `photos_${timestamp}.pdf`;
+}
+
+async function downloadBytesAsFile(bytes: Uint8Array, filename: string) {
+  const arrayBuffer = bytes.buffer as unknown as ArrayBuffer;
+  const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+export async function createPDFWithMerges(
+  images: ImageForPDF[],
+  pdfFiles: File[],
+  settings: PDFSettings = defaultPDFSettings,
+  filename: string = 'photos.pdf'
+): Promise<void> {
+  if (!images.length && !pdfFiles.length) {
+    throw new Error('No content provided');
+  }
+
+  // First, build an image-only PDF with jsPDF to preserve sizing, cover and page numbers
+  let baseBytes: ArrayBuffer | Uint8Array | null = null;
+  if (images.length) {
+    const pageDimensions = getPageDimensions(settings.pageSize, settings.orientation);
+    const pdf = new jsPDF({ orientation: settings.orientation, unit: 'mm', format: settings.pageSize });
+
+    let isFirstPage = true;
+    if (settings.addCoverPage) {
+      const centerX = pageDimensions.width / 2;
+      const centerY = pageDimensions.height / 2;
+      pdf.setFontSize(24);
+      pdf.setTextColor(40);
+      const title = settings.coverTitle || 'My PDF';
+      const titleWidth = pdf.getTextWidth(title);
+      pdf.text(title, centerX - titleWidth / 2, centerY - 10);
+      isFirstPage = false;
+    }
+
+    for (let i = 0; i < images.length; i++) {
+      const image = images[i];
+      if (!isFirstPage) pdf.addPage();
+      const imageDimensions = await getImageDimensions(image.dataUrl);
+      const imageSize = calculateImageSize(
+        imageDimensions.width,
+        imageDimensions.height,
+        pageDimensions.width,
+        pageDimensions.height,
+        settings.margin,
+        settings.fitMode
+      );
+      pdf.addImage(image.dataUrl, 'JPEG', imageSize.x, imageSize.y, imageSize.width, imageSize.height, undefined, 'FAST');
+
+      if (settings.addPageNumbers) {
+        pdf.setFontSize(10);
+        pdf.setTextColor(100);
+        const pageNumberText = `${i + (settings.addCoverPage ? 0 : 1)} / ${images.length + (settings.addCoverPage ? 0 : 0)}`;
+        const textWidth = pdf.getTextWidth(pageNumberText);
+        const x = (pageDimensions.width - textWidth) / 2;
+        const y = pageDimensions.height - settings.margin / 2;
+        pdf.text(pageNumberText, x, y);
+      }
+      isFirstPage = false;
+    }
+
+    baseBytes = pdf.output('arraybuffer');
+  }
+
+  // If no external PDFs, just save the images PDF
+  if (pdfFiles.length === 0 && baseBytes) {
+    const blob = new Blob([baseBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    return;
+  }
+
+  // Otherwise, merge using pdf-lib
+  const { PDFDocument } = await import('pdf-lib') as any;
+  const outDoc = baseBytes
+    ? await PDFDocument.load(baseBytes)
+    : await PDFDocument.create();
+
+  for (const file of pdfFiles) {
+    try {
+      const donorBytes = new Uint8Array(await file.arrayBuffer());
+      const donor = await PDFDocument.load(donorBytes);
+      const pages = await outDoc.copyPages(donor, donor.getPageIndices());
+      pages.forEach((p: any) => outDoc.addPage(p));
+    } catch (e) {
+      console.error('Error merging PDF', file.name, e);
+    }
+  }
+
+  const mergedBytes = await outDoc.save();
+  await downloadBytesAsFile(mergedBytes, filename);
 }

@@ -61,7 +61,26 @@ export default function Compressor() {
             </p>
           </div>
 
-          {/* Why Compress Images - Moved to top */}
+          {/* Upload Section FIRST */}
+          <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
+              Drop Your Images Here
+            </h2>
+            <FileUploadZone
+              onFileSelect={handleFileSelect}
+              icon={<ImageIcon className="mx-auto mb-6 h-20 w-20 text-gray-400" />}
+              title="Drop your images here"
+              description="or click to browse files • Supports batch processing"
+              supportedFormats="Supports: JPEG, PNG, WebP • Max size: 10MB per file"
+              testId="compressor-upload"
+              isLoading={isProcessing}
+            />
+            <p className="text-gray-600 text-center mt-6">
+              Upload single or multiple images for batch processing
+            </p>
+          </div>
+
+          {/* Why Compress Images */}
           <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
             <h2 className="text-3xl font-bold text-gray-800 text-center mb-8">
               Why Compress Images?
@@ -107,25 +126,6 @@ export default function Compressor() {
                 </p>
               </div>
             </div>
-          </div>
-
-          {/* Upload Section */}
-          <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
-              Drop Your Images Here
-            </h2>
-            <p className="text-gray-600 text-center mb-6">
-              Upload single or multiple images for batch processing
-            </p>
-            <FileUploadZone
-              onFileSelect={handleFileSelect}
-              icon={<ImageIcon className="mx-auto mb-6 h-20 w-20 text-gray-400" />}
-              title="Drop your images here"
-              description="or click to browse files • Supports batch processing"
-              supportedFormats="Supports: JPEG, PNG, WebP • Max size: 10MB per file"
-              testId="compressor-upload"
-              isLoading={isProcessing}
-            />
           </div>
 
           {/* Powerful Features */}

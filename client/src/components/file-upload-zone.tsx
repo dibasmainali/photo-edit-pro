@@ -48,12 +48,15 @@ export default function FileUploadZone({
       return `File size must be less than ${Math.round(maxSize / 1024 / 1024)}MB`;
     }
 
-    if (!file.type.startsWith('image/')) {
-      return 'Please select a valid image file';
+    const acceptsPdf = accept.includes('application/pdf');
+    const isImage = file.type.startsWith('image/');
+    const isPdf = file.type === 'application/pdf';
+    if (!isImage && !(acceptsPdf && isPdf)) {
+      return 'Unsupported file type for this uploader';
     }
 
     return null;
-  }, [maxSize]);
+  }, [maxSize, accept]);
 
   const handleFileSelect = useCallback((file: File) => {
     const validationError = validateFile(file);

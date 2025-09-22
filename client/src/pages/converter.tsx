@@ -66,14 +66,11 @@ export default function Converter() {
             </p>
           </div>
 
-          {/* Upload Section */}
+          {/* Upload Section FIRST */}
           <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
             <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
               Upload Your Image
             </h2>
-            <p className="text-gray-600 text-center mb-6">
-              Drop your image to start converting between formats
-            </p>
             <FileUploadZone
               onFileSelect={handleFileSelect}
               icon={<RefreshCw className="mx-auto mb-6 h-20 w-20 text-gray-400" />}
@@ -83,6 +80,9 @@ export default function Converter() {
               testId="converter-upload"
               isLoading={isProcessing}
             />
+            <p className="text-gray-600 text-center mt-6">
+              Drop your image to start converting between formats
+            </p>
           </div>
 
           {/* Features Section */}

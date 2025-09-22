@@ -3,9 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import FileUploadZone from "@/components/file-upload-zone";
-import { Download, FilePlus2, Trash2 } from "lucide-react";
+import { Download, FilePlus2, Trash2, ArrowUp, ArrowDown, Info } from "lucide-react";
 import {
   createPDFFromImages,
+  createPDFWithMerges,
   defaultPDFSettings,
   loadImageAsDataUrl,
   validateImageFile,
@@ -17,8 +18,11 @@ import {
 
 export default function PDFConverter() {
   const [images, setImages] = useState<ImageForPDF[]>([]);
+  const [pdfFiles, setPdfFiles] = useState<File[]>([]);
+  const [pdfPreviews, setPdfPreviews] = useState<{ name: string; url: string }[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [settings, setSettings] = useState<PDFSettings>(defaultPDFSettings);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -26,15 +30,28 @@ export default function PDFConverter() {
   }, []);
 
   const addFiles = useCallback(async (files: File[]) => {
-    const validFiles = files.filter((file) => !validateImageFile(file));
-    const enriched: ImageForPDF[] = await Promise.all(
-      validFiles.map(async (file) => ({
-        file,
-        dataUrl: await loadImageAsDataUrl(file),
-        name: file.name,
-      }))
-    );
-    setImages((prev) => [...prev, ...enriched]);
+    const imageFiles: File[] = [];
+    const newPdfFiles: File[] = [];
+    for (const f of files) {
+      if (f.type === 'application/pdf') {
+        newPdfFiles.push(f);
+      } else if (!validateImageFile(f)) {
+        imageFiles.push(f);
+      }
+    }
+    if (imageFiles.length) {
+      const enriched: ImageForPDF[] = await Promise.all(
+        imageFiles.map(async (file) => ({ file, dataUrl: await loadImageAsDataUrl(file), name: file.name }))
+      );
+      setImages((prev) => [...prev, ...enriched]);
+    }
+    if (newPdfFiles.length) {
+      setPdfFiles((prev) => [...prev, ...newPdfFiles]);
+      setPdfPreviews((prev) => [
+        ...prev,
+        ...newPdfFiles.map((f) => ({ name: f.name, url: URL.createObjectURL(f) }))
+      ]);
+    }
   }, []);
 
   const handleSingleFile = useCallback((file: File) => {
@@ -42,11 +59,15 @@ export default function PDFConverter() {
   }, [addFiles]);
 
   const handleCreatePDF = async () => {
-    if (!images.length) return;
+    if (!images.length && !pdfFiles.length) return;
     setIsProcessing(true);
     try {
       const filename = generateDefaultFilename(images);
-      await createPDFFromImages(images, settings, filename);
+      if (pdfFiles.length) {
+        await createPDFWithMerges(images, pdfFiles, settings, filename);
+      } else {
+        await createPDFFromImages(images, settings, filename);
+      }
     } catch (e) {
       console.error(e);
     } finally {
@@ -56,6 +77,59 @@ export default function PDFConverter() {
 
   const removeImage = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const moveImage = (index: number, direction: "up" | "down") => {
+    setImages((prev) => {
+      const next = [...prev];
+      const newIndex = direction === "up" ? index - 1 : index + 1;
+      if (newIndex < 0 || newIndex >= next.length) return prev;
+      const temp = next[index];
+      next[index] = next[newIndex];
+      next[newIndex] = temp;
+      return next;
+    });
+  };
+
+  const clearAll = () => {
+    setImages([]);
+    setPdfFiles([]);
+    setPdfPreviews((prev) => {
+      prev.forEach((p) => URL.revokeObjectURL(p.url));
+      return [];
+    });
+  };
+
+  // DnD handlers
+  const handleDragStart = (index: number) => (e: React.DragEvent<HTMLDivElement>) => {
+    setDragIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (overIndex: number) => (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (dropIndex: number) => (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (dragIndex === null || dragIndex === dropIndex) return;
+    setImages((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(dragIndex, 1);
+      next.splice(dropIndex, 0, moved);
+      return next;
+    });
+    setDragIndex(null);
+  };
+
+  const removePdf = (index: number) => {
+    setPdfFiles((prev) => prev.filter((_, i) => i !== index));
+    setPdfPreviews((prev) => {
+      const item = prev[index];
+      if (item) URL.revokeObjectURL(item.url);
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
   return (
@@ -68,8 +142,53 @@ export default function PDFConverter() {
           </p>
         </div>
 
-        {/* Features Section - Only show when no images */}
-        {!images.length && (
+        {/* Upload FIRST */}
+        <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <FilePlus2 className="mr-3 text-red-500 h-6 w-6" />
+            <h2 className="text-2xl font-bold text-gray-800">Add Images</h2>
+            {!!images.length && (
+              <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50" onClick={clearAll}>
+                <Trash2 className="h-4 w-4 mr-2" />
+                Clear All
+              </Button>
+            )}
+          </div>
+          <FileUploadZone
+            onFileSelect={handleSingleFile}
+            onFilesSelect={addFiles}
+            multiple
+            accept="image/*,application/pdf"
+            isLoading={isProcessing}
+            title="Drop your images here"
+            description="or click to select images or PDFs"
+            supportedFormats="Supports: JPEG, PNG, WebP, GIF, BMP, PDF • Max size: 10MB per image"
+            testId="pdf-upload"
+          />
+          <p className="text-gray-600 mt-4">
+            Upload one or multiple images to start creating your PDF.
+          </p>
+          <div className="mt-3 text-sm text-gray-600 bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <div className="flex items-start">
+              <Info className="h-4 w-4 text-red-500 mr-2 mt-0.5" />
+              <ul className="list-disc list-inside space-y-1">
+                <li>You can drag files in or click to browse.</li>
+                <li>Reorder pages with the arrows on each thumbnail.</li>
+                <li>Use Clear All to start over quickly.</li>
+              </ul>
+            </div>
+          </div>
+          {(!!images.length || !!pdfFiles.length) && (
+            <div className="mt-4 text-sm text-gray-600">
+              {!!images.length && <span className="bg-gray-100 px-2 py-1 rounded mr-2">{images.length} images</span>}
+              {!!pdfFiles.length && <span className="bg-gray-100 px-2 py-1 rounded mr-2">{pdfFiles.length} PDFs</span>}
+              Total size: {formatFileSize(images.reduce((acc, img) => acc + img.file.size, 0) + pdfFiles.reduce((acc, f) => acc + f.size, 0))}
+            </div>
+          )}
+        </div>
+
+        {/* Features Section - show only when nothing uploaded */}
+        {!(images.length || pdfFiles.length) && (
           <>
             <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
               <h2 className="text-3xl font-bold text-gray-800 text-center mb-8">
@@ -156,45 +275,61 @@ export default function PDFConverter() {
           </>
         )}
 
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
-          <div className="flex items-center mb-6">
-            <FilePlus2 className="mr-3 text-red-500 h-6 w-6" />
-            <h2 className="text-2xl font-bold text-gray-800">Add Images</h2>
-          </div>
-          <FileUploadZone
-            onFileSelect={handleSingleFile}
-            onFilesSelect={addFiles}
-            multiple
-            isLoading={isProcessing}
-            title="Drop your images here"
-            description="or click to select multiple files"
-            supportedFormats="Supports: JPEG, PNG, WebP, GIF, BMP • Max size: 10MB"
-            testId="pdf-upload"
-          />
-          {!!images.length && (
-            <div className="mt-4 text-sm text-gray-600">
-              <span className="bg-gray-100 px-2 py-1 rounded mr-2">{images.length} selected</span>
-              Total size: {formatFileSize(images.reduce((acc, img) => acc + img.file.size, 0))}
-            </div>
-          )}
-        </div>
-
-        {!!images.length && (
+        {(images.length || pdfFiles.length) && (
           <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Reorder and Review</h2>
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {images.map((img, idx) => (
-                <div key={idx} className="relative bg-gray-100 rounded-lg overflow-hidden">
-                  <img src={img.dataUrl} alt={img.name} className="w-full h-40 object-cover" />
-                  <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                    {idx + 1}
+            {!!images.length && (
+              <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {images.map((img, idx) => (
+                  <div
+                    key={idx}
+                    className={`relative bg-gray-100 rounded-lg overflow-hidden ${dragIndex === idx ? 'ring-2 ring-red-400' : ''}`}
+                    draggable
+                    onDragStart={handleDragStart(idx)}
+                    onDragOver={handleDragOver(idx)}
+                    onDrop={handleDrop(idx)}
+                  >
+                    <img src={img.dataUrl} alt={img.name} className="w-full h-40 object-cover" />
+                    <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                      {idx + 1}
+                    </div>
+                    <div className="absolute top-2 right-2 flex gap-2">
+                      <Button size="icon" variant="secondary" className="bg-white/90 hover:bg-white text-gray-700 shadow" onClick={() => moveImage(idx, "up")} disabled={idx === 0}>
+                        <ArrowUp className="h-4 w-4" />
+                      </Button>
+                      <Button size="icon" variant="secondary" className="bg-white/90 hover:bg-white text-gray-700 shadow" onClick={() => moveImage(idx, "down")} disabled={idx === images.length - 1}>
+                        <ArrowDown className="h-4 w-4" />
+                      </Button>
+                      <Button size="icon" className="bg-red-500 hover:bg-red-600 text-white" onClick={() => removeImage(idx)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[11px] px-2 py-1">
+                      <div className="truncate" title={img.name}>{img.name}</div>
+                      <div className="opacity-80">{formatFileSize(img.file.size)}</div>
+                    </div>
                   </div>
-                  <Button size="icon" className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white" onClick={() => removeImage(idx)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                ))}
+              </div>
+            )}
+            {!!pdfFiles.length && (
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">PDF Previews</h3>
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {pdfPreviews.map((p, i) => (
+                    <div key={i} className="relative bg-gray-100 rounded-lg overflow-hidden border">
+                      <iframe src={p.url} title={p.name} className="w-full h-40" />
+                      <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded max-w-[70%] truncate" title={p.name}>
+                        {p.name}
+                      </div>
+                      <Button size="icon" className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white" onClick={() => removePdf(i)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -249,6 +384,41 @@ export default function PDFConverter() {
                   onChange={(e) => setSettings((s) => ({ ...s, margin: Number(e.target.value) }))}
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-800 mb-2">Cover Page</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    id="toggle-cover"
+                    type="checkbox"
+                    className="h-4 w-4"
+                    checked={!!settings.addCoverPage}
+                    onChange={(e) => setSettings((s) => ({ ...s, addCoverPage: e.target.checked }))}
+                  />
+                  <label htmlFor="toggle-cover" className="text-sm text-gray-700">Add a text cover page</label>
+                </div>
+                {settings.addCoverPage && (
+                  <input
+                    type="text"
+                    className="mt-2 w-full bg-white border border-gray-300 rounded-md p-3 text-gray-700 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                    value={settings.coverTitle || ''}
+                    onChange={(e) => setSettings((s) => ({ ...s, coverTitle: e.target.value }))}
+                    placeholder="Cover page title"
+                  />
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-800 mb-2">Page Numbers</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    id="toggle-numbers"
+                    type="checkbox"
+                    className="h-4 w-4"
+                    checked={!!settings.addPageNumbers}
+                    onChange={(e) => setSettings((s) => ({ ...s, addPageNumbers: e.target.checked }))}
+                  />
+                  <label htmlFor="toggle-numbers" className="text-sm text-gray-700">Show page numbers</label>
+                </div>
+              </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
@@ -256,14 +426,46 @@ export default function PDFConverter() {
                 className="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white" 
                 size="lg" 
                 onClick={handleCreatePDF} 
-                disabled={!images.length || isProcessing}
+                disabled={!(images.length || pdfFiles.length) || isProcessing}
               >
-                <Download className="mr-2 h-4 w-4" />
-                Download PDF
+                {isProcessing ? (
+                  <>
+                    <span className="mr-2 inline-flex h-4 w-4">
+                      <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+                    </span>
+                    Creating PDF...
+                  </>
+                ) : (
+                  <>
+                    <Download className="mr-2 h-4 w-4" />
+                    Download PDF
+                  </>
+                )}
               </Button>
             </div>
           </div>
         </div>
+
+        {/* Sticky Action Bar */}
+        {!!images.length || !!pdfFiles.length ? (
+          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40">
+            <div className="bg-white/95 backdrop-blur rounded-full shadow-lg border border-gray-200 px-4 py-2 flex items-center gap-3">
+              <span className="text-sm text-gray-700">
+                {images.length} image{images.length === 1 ? '' : 's'} selected{pdfFiles.length ? ` + ${pdfFiles.length} PDF${pdfFiles.length > 1 ? 's' : ''}` : ''}
+              </span>
+              <span className="hidden sm:inline text-xs text-gray-500">
+                Total {formatFileSize(images.reduce((acc, img) => acc + img.file.size, 0) + pdfFiles.reduce((acc, f) => acc + f.size, 0))}
+              </span>
+              <Button 
+                className="bg-red-500 hover:bg-red-600 text-white h-8 px-3"
+                onClick={handleCreatePDF}
+                disabled={isProcessing}
+              >
+                {isProcessing ? 'Creating...' : 'Download PDF'}
+              </Button>
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );
